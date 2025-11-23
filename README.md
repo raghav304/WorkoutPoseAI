@@ -1,169 +1,203 @@
-🏋️‍♂️ AI Workout Form Trainer
-Real-Time Exercise Detection Using MediaPipe + OpenCV + Streamlit
+# 🏋️‍♂️ AI Workout Form Trainer  
+**Real-Time Exercise Detection Using MediaPipe + OpenCV + Streamlit**
 
-The AI Workout Form Trainer is a real-time, webcam-based fitness assistant that analyzes your exercise form using MediaPipe Pose, tracks your joint angles, and counts reps accurately using a state-machine approach.
+The **AI Workout Form Trainer** is a real-time, webcam-based fitness assistant that analyzes your exercise form using MediaPipe Pose, tracks joint angles, and counts reps accurately using a state-machine approach.
+
 It currently supports:
 
-Bicep Curls
+- Bicep Curls  
+- Shoulder Press  
+- Squats  
 
-Shoulder Press
+Works with any webcam — including your **phone camera via DroidCam**.
 
-Squats
+---
 
-Built with Python, OpenCV, MediaPipe, and Streamlit, this project works with any webcam — including your phone camera via apps like DroidCam.
+## 🚀 Features
 
-🚀 Features
-✔ Real-Time Pose Estimation
+### ✔ Real-Time Pose Estimation
+- Uses MediaPipe’s 33-landmark Pose model to extract body joints from the webcam feed.
 
-Uses MediaPipe’s 33 landmark Pose model to extract joint positions from webcam feed.
+### ✔ Angle-Based Rep Counting
+- Computes joint angles (elbow, knee) using vector geometry.
+- Applies **angle smoothing** to avoid jitter.
 
-✔ Angle-Based Rep Counting
+### ✔ Accurate State-Machine Logic
+Reps are counted only when the user performs a **full movement cycle**:
 
-Computes joint angles (elbow, knee) using vector geometry and applies smoothing to avoid jitter.
+`up → down → up`
 
-✔ Accurate State-Machine Rep Logic
+with minimum frame thresholds to avoid false positives and double-counting.
 
-Reps are counted only when the user performs a full cycle:
-up → down → up
-with minimum frame requirements to avoid miscounts.
+### ✔ Multi-Exercise Support
 
-✔ Multi-Exercise Support
+Each exercise has its own joint targets and angle thresholds:
 
-Each exercise has its own joint targets and thresholds:
+| Exercise       | Angle Tracked | Threshold Logic                          |
+|----------------|--------------|------------------------------------------|
+| Bicep Curl     | Elbow        | > 145° (down), < 55° (up)                |
+| Shoulder Press | Elbow        | < 105° (down), > 155° (up)               |
+| Squat          | Knee         | > 170° (standing/up), < 100° (bottom)    |
 
-Exercise	Angle Tracked	Threshold Logic
-Bicep Curl	Elbow	>145° (down), <55° (up)
-Shoulder Press	Elbow	<105° (down), >155° (up)
-Squat	Knee	>170° (up), <100° (down)
-✔ Streamlit Web Interface
+### ✔ Streamlit Web Interface
 
-User-friendly web app with:
+- Dropdown exercise selection  
+- Live webcam feed rendered in the browser  
+- Real-time rep counter & feedback overlay on video  
+- Sidebar session stats (can be extended further)
 
-Dropdown exercise selection
+---
 
-Live webcam feed
+## 📦 Tech Stack
 
-Sidebar session stats
+- **Python 3.x**
+- **MediaPipe Pose** – pose estimation
+- **OpenCV** – video capture & drawing
+- **NumPy** – angle calculations
+- **Streamlit** – web UI
 
-Real-time reps & feedback overlay
+---
 
-📦 Tech Stack
+## 📁 Project Structure
 
-Python 3.x
-
-MediaPipe Pose (pose estimation)
-
-OpenCV (video capture & drawing)
-
-Streamlit (web interface)
-
-NumPy (angle calculations)
-
-📁 Project Structure
+```bash
 WorkoutPoseAI/
 │
 ├── web_app/
-│   ├── streamlit_main.py        # Main Streamlit app
-│   └── exercise_logic.py        # Rep counting + angle logic
+│   ├── streamlit_main.py      # Main Streamlit app (web UI + camera loop)
+│   └── exercise_logic.py      # Rep counting + angle & form logic
 │
 ├── utils/
-│   └── angle_utils.py           # Angle calculation helper
+│   └── angle_utils.py         # Angle calculation helper (vector math)
 │
-├── exercises/                   # (Optional: old standalone scripts)
+├── exercises/                 # (Optional: old standalone scripts for testing)
+│   ├── bicep_curl.py
+│   ├── shoulder_press.py
+│   └── squat.py (if created separately)
 │
-├── pose_webcam.py               # Basic MediaPipe test
-├── test_cam.py                  # Camera tester
-├── camera_view.py               # Webcam helper
+├── pose_webcam.py             # Basic MediaPipe webcam pose test
+├── test_cam.py                # Camera index tester
+├── camera_view.py             # Simple webcam preview helper
 │
-├── requirements.txt             # Python dependencies
-└── README.md                    # (This file)
+├── requirements.txt           # Python dependencies
+└── README.md                  # Project documentation (this file)
 
-🛠️ Installation
-1. Clone the repository
+```
+---
+
+## 🛠 Installation
+
+### 1️⃣ Clone the repository
+
+```bash
 git clone https://github.com/raghav304/WorkoutPoseAI.git
 cd WorkoutPoseAI
+```
+### 2️⃣ Create a virtual environment
 
-2. Create a virtual environment
+```bash
 python -m venv venv
+```
+### 3️⃣ Activate the venv (Windows PowerShell)
 
-3. Activate the venv (Windows)
+```bash
 .\venv\Scripts\Activate.ps1
+```
+### If PowerShell blocks scripts:
 
-
-If PowerShell blocks scripts:
-
+```bash
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\venv\Scripts\Activate.ps1
+```
+### 4️⃣ Install dependencies
 
-4. Install dependencies
+```bash
 pip install -r requirements.txt
-
-▶️ Running the App
+```
+### ▶️ Running the App
+```bash
 streamlit run web_app/streamlit_main.py
-
-
-This will open a browser window.
+```
+### This will open the app in your browser.
 
 In the app:
 
-Select Bicep Curl / Shoulder Press / Squat
+1. Select Bicep Curl / Shoulder Press / Squat
 
-Click Start Workout
+2. Click Start Workout
 
-Stand in front of your webcam or phone (DroidCam)
+3. Stand in front of your webcam / DroidCam
 
-Start exercising — reps will appear in real time!
+4. Reps will be counted live on the video feed
 
-🧠 How It Works
-1. Pose Estimation (MediaPipe)
+## 🧠 How It Works
+### 1️⃣ Pose Estimation
+#### MediaPipe detects 33 body landmarks per frame.
 
-The webcam frame is passed to MediaPipe Pose, which outputs 33 landmarks.
+### 2️⃣ Angle Calculation
+#### Joint triplets:
 
-2. Angle Calculation
+- Bicep Curl → shoulder–elbow–wrist
 
-For each exercise, specific joints are tracked:
+- Shoulder Press → shoulder–elbow–wrist
 
-Bicep Curl → shoulder–elbow–wrist
+- Squat → hip–knee–ankle
 
-Shoulder Press → shoulder–elbow–wrist
+### 3️⃣ Angle Smoothing
+```text
+smooth_angle = α * prev + (1 − α) * current
+```
+### 4️⃣ Rep Counting (Finite State Machine)
+```text
+if angle < down_threshold:
+    stage = "down"
 
-Squat → hip–knee–ankle
+if stage == "down" AND angle > up_threshold:
+    reps += 1
+    stage = "up"
+```
+#### This prevents double-counting and improves accuracy.
 
-Using vector math, we compute the angle at the joint.
+## 📈 Future Enhancements
+### 
+- Add pushups, lunges, deadlifts
 
-3. Angle Smoothing
+- Voice feedback (“Good rep!”, “Go deeper!”)
 
-Raw angles fluctuate → we apply exponential smoothing:
+- Workout analytics dashboard
 
-smooth = α * prev + (1 − α) * current
+- Deploy on Streamlit Cloud / HuggingFace
 
-4. Rep Counting (Finite State Machine)
+- Left–right form symmetry detection
 
-Example for Squat:
+## 🤝 Contributing
+#### Contributions are welcome!
+Feel free to fork the repo and open a PR.
 
-if angle < down_thresh → phase = "down"
-if phase == "down" AND angle > up_thresh → rep++
+## 📬 Contact
+#### Developer: Raghav Varma
 
-
-Minimum frame requirements stop false triggers.
-
-📈 Future Enhancements
-
-Add pushups, lunges, deadlifts
-
-Add voice feedback (“Good rep!”, “Go deeper!”)
-
-Add session analytics dashboard
-
-Deploy the app on Streamlit Cloud / HuggingFace Spaces
-
-Add left-right symmetry detection
-
-🤝 Contributing
-
-Feel free to fork the repo and submit PRs for new exercises or improvements!
-
-📬 Contact
-
-Built by Raghav Varma
 GitHub: https://github.com/raghav304
+
+Project Repo: https://github.com/raghav304/WorkoutPoseAI
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
